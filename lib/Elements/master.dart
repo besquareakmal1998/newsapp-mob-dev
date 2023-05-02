@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 
 import 'home_page.dart';
@@ -9,12 +7,11 @@ import 'channel_list.dart';
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
-
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  MyHomePageState createState() => MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
     const HomePage(),
@@ -22,7 +19,6 @@ class _MyHomePageState extends State<MyHomePage> {
     const SearchPage(),
   ];
 
-  @override
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -53,6 +49,29 @@ class _MyHomePageState extends State<MyHomePage> {
               label: 'Search',
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class DetailsPage extends StatelessWidget {
+  const DetailsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Details Page",
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800),
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [Center()],
         ),
       ),
     );

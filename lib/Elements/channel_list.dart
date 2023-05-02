@@ -46,7 +46,6 @@ class NewsChannelsScreen extends StatelessWidget {
         title: const Text('News Channels List'),
       ),
       body: BlocBuilder<CubitChannelList, ChannelState>(
-        
         builder: (context, channels) {
           if (channels is ChannelStateLoading) {
             return const Text("f");
