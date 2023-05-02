@@ -1,99 +1,118 @@
-// import 'dart:convert';
-
-// import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:newsapp/Elements/master.dart';
-
-// @override
-// Widget build(BuildContext context) {
-//   return Scaffold(
-//     appBar: AppBar(
-//       title: Text("Flutter News"),
-//     ),
-//     body: FutureBuilder<List<Channel>>(
-//       future: getNewsChannels(),
-//       builder: (BuildContext context, AsyncSnapshot<List<Channel>> snapshot) {
-//         if (snapshot.hasData) {
-//           final channels = snapshot.data!;
-//           print(channels); // print the list of channels
-//           return ListView.builder(
-//             itemCount: channels.length,
-//             itemBuilder: (BuildContext context, int index) {
-//               return ListTile(
-//                 leading: CircleAvatar(
-//                   backgroundImage: NetworkImage(channels[index].imageUrl),
-//                 ),
-//                 title: Text(channels[index].name),
-//               );
-//             },
-//           );
-//         } else if (snapshot.hasError) {
-//           return Center(
-//             child: Text("${snapshot.error}"),
-//           );
-//         }
-//         return Center(
-//           child: CircularProgressIndicator(),
-//         );
-//       },
-//     ),
-//   );
-// }
-
-// Future<List<Channel>> getNewsChannels(
-//     {String country = 'us', int pageSize = 10}) async {
-//   final response = await http.get(Uri.parse(
-//       weblink));
-//   if (response.statusCode == 200) {
-//     final sourcesJson = json.decode(response.body)['sources'];
-//     return sourcesJson
-//         .map<Channel>((source) => Channel.fromJson(source))
-//         .toList();
-//   } else {
-//     throw Exception('Failed to load news channels');
-//   }
-// }
-
-// class Channel {
-//   final String name;
-//   final String description;
-//   final String url;
-//   final String category;
-//   final String imageUrl;
-
-//   Channel({
-//     required this.name,
-//     required this.description,
-//     required this.url,
-//     required this.category,
-//     required this.imageUrl,
-//   });
-
-//   factory Channel.fromJson(Map<String, dynamic> json) {
-//     return Channel(
-//       name: json['name'],
-//       description: json['description'],
-//       url: json['url'],
-//       category: json['category'],
-//       imageUrl: json['urlsToLogos']['small'],
-//     );
-//   }
-// }
-
 import 'dart:convert';
 
-import 'package:newsapp/key.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:newsapp/Elements/cubit_cahnnellist.dart';
+import 'package:newsapp/key.dart';
+import 'package:newsapp/Elements/articles_screen.dart';
+import 'package:newsapp/string_extension.dart';
 
-Future<List<String>> getNewsChannels() async {
-  String channel_weblink = "$url/sources?apiKey=$apiKey";
-  final response = await http.get(Uri.parse(channel_weblink));
-  if (response.statusCode == 200) {
-    final sourcesJson = json.decode(response.body)['sources'];
-    return sourcesJson
-        .map<String>((source) => source['name'] as String)
-        .toList();
-  } else {
-    throw Exception('Failed to load news channels');
+class NewsChannelsScreen extends StatelessWidget {
+  const NewsChannelsScreen({Key? key}) : super(key: key);
+
+  Future<List<String>> getNewsChannels() async {
+    String channelWeblink = "$url/sources?country=$country&apiKey=$apiKey";
+    final response = await http.get(Uri.parse(channelWeblink));
+    if (response.statusCode == 200) {
+      final sourcesJson = json.decode(response.body)['sources'];
+      return sourcesJson
+          .map<String>((source) => source['id'] as String)
+          .toList();
+    } else {
+      throw Exception('Failed to load news channels');
+    }
   }
+
+  void navigateToArticles(
+      BuildContext context, String channelName, String channelId) {
+    String formattedChannelName = channelId.replaceAll('-', ' ').capitalize();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ArticlesScreen(
+          channelName: formattedChannelName,
+          channelId: channelId,
+          description: '',
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('News Channels List'),
+      ),
+      body: BlocBuilder<CubitChannelList, ChannelState>(
+        
+        builder: (context, channels) {
+          if (channels is ChannelStateLoading) {
+            return const Text("f");
+          } else if (channels is ChannelStateLoaded) {
+            return Padding(
+              padding: const EdgeInsets.only(top: 16.0),
+              child: FutureBuilder<List<String>>(
+                future: getNewsChannels(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<String>> snapshot) {
+                  if (snapshot.hasData) {
+                    final channels = snapshot.data!;
+                    return GridView.count(
+                      crossAxisCount: 3, // set the number of columns to 3
+                      children: List.generate(channels.length, (index) {
+                        return GestureDetector(
+                          onTap: () {
+                            navigateToArticles(
+                                context, channels[index], channels[index]);
+                          },
+                          child: Column(
+                            children: [
+                              Container(
+                                height: 60,
+                                width: 60,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  shape: BoxShape.circle,
+                                ),
+                                child: CircleAvatar(
+                                  radius: 28.0,
+                                  backgroundImage: NetworkImage(
+                                    getChannelImageUrl(channels[index]),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              Text(
+                                channels[index],
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('${snapshot.error}'),
+                    );
+                  }
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              ),
+            );
+          } else {
+            return const Text("data");
+          }
+        },
+      ),
+    );
+  }
+}
+
+String getChannelImageUrl(String channelId) {
+  return 'https://logo.clearbit.com/${channelId.replaceAll('-', '').toLowerCase()}.com';
 }

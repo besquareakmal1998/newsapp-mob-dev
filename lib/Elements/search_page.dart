@@ -1,8 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class ChannelPage extends StatelessWidget {
-  const ChannelPage({Key? key}) : super(key: key);
+class SearchPage extends StatelessWidget {
+  const SearchPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +10,7 @@ class ChannelPage extends StatelessWidget {
         title: const Text('Home Page'),
       ),
       body: const Center(
-        child: Text('This is the channel page.'),
+        child: Text('This is the search page.'),
       ),
     );
   }

@@ -2,11 +2,13 @@
 
 import 'package:flutter/material.dart';
 
-import 'ChannelPage.dart';
-import 'HomePage.dart';
-import 'SearchPage.dart';
+import 'home_page.dart';
+import 'search_page.dart';
+import 'channel_list.dart';
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -16,7 +18,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
     const HomePage(),
-    const ChannelPage(),
+    NewsChannelsScreen(),
     const SearchPage(),
   ];
 
