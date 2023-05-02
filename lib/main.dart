@@ -7,6 +7,6 @@ void main() {
   runApp(MaterialApp(
     title: 'Flutter News',
     home: BlocProvider(
-      create: (context) => CubitChannelList(), child: const MyHomePage()),
+        create: (context) => CubitChannelList(), child: const MyHomePage()),
   ));
 }
