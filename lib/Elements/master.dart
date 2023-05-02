@@ -15,7 +15,7 @@ class MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
   final List<Widget> _pages = [
     const HomePage(),
-    NewsChannelsScreen(),
+    const NewsChannelsScreen(),
     const SearchPage(),
   ];
 

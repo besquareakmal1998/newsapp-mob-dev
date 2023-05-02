@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:newsapp/key.dart';
+import 'cubit_articles_screen.dart';
 
 class Article {
   final String title;
@@ -45,6 +47,7 @@ class ArticlesScreen extends StatelessWidget {
     String articlesWeblink =
         "$url/everything?sources=$channelId&apiKey=$apiKey";
     final response = await http.get(Uri.parse(articlesWeblink));
+    print(response);
     if (response.statusCode == 200) {
       final articlesJson = json.decode(response.body)['articles'];
       return articlesJson
@@ -57,15 +60,20 @@ class ArticlesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocProvider<CubitArticlesScreen>(
+        create: (context) => CubitArticlesScreen(channelId),
+    child: Scaffold(
       appBar: AppBar(
         title: Text('Flutter News - $channelName'),
       ),
-      body: FutureBuilder<List<Article>>(
-        future: getArticlesForChannel(),
-        builder: (BuildContext context, AsyncSnapshot<List<Article>> snapshot) {
-          if (snapshot.hasData) {
-            final articles = snapshot.data!;
+      body: BlocBuilder<CubitArticlesScreen, ArticleScreenState>(
+        builder: (BuildContext context, ArticleScreenState state) {
+          if (state is ArticleScreenStateLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (state is ArticleScreenStateLoaded) {
+            final articles = state.getChannels;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -132,7 +140,14 @@ class ArticlesScreen extends StatelessWidget {
                           ],
                         ),
                         onTap: () {
-                          // TODO: Implement article detail screen
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => ArticleDetailsScreen(
+                          //       article: articles[index],
+                          //     ),
+                          //   ),
+                          // );
                         },
                       );
                     },
@@ -140,17 +155,19 @@ class ArticlesScreen extends StatelessWidget {
                 ),
               ],
             );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('${snapshot.error}'),
+          } else if (state is ArticleScreenStateError) {
+            return const Center(
+              child: Text('Failed to load articles'),
+            );
+          } else {
+            return const Center(
+              child: Text('Unknown Error!'),
             );
           }
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
         },
       ),
-    );
+    )
+    );  
   }
 }
 
