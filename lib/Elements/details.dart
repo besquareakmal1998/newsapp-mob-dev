@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:iconly/iconly.dart';
+// import 'package:iconly/iconly.dart';
 
 void main() {
   runApp(const MyApp());
@@ -130,8 +130,7 @@ class DetailView extends StatelessWidget {
                   ),
                 ),
                 ElevatedButton(
-                    onPressed: (
-                        //link
+                    onPressed: (//link
                         ) {},
                     child: const Text("Read More")),
               ],
