@@ -1,39 +1,11 @@
-import 'dart:convert';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as http;
-import 'package:dots_indicator/dots_indicator.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:dots_indicator/dots_indicator.dart';
 import 'package:newsapp/Elements/homepagearticles_cubit.dart';
-
-import 'package:newsapp/data/articles_get_req.dart';
-
-class Article {
-  String title;
-  String author;
-  String description;
-  String imageUrl;
-  String sourceName;
-
-  Article({
-    required this.title,
-    required this.author,
-    required this.description,
-    required this.imageUrl,
-    required this.sourceName,
-  });
-
-  factory Article.fromJson(Map<String, dynamic> json) {
-    return Article(
-      title: json['title'],
-      author: json['author'] ?? 'Unknown',
-      description: json['description'] ?? '',
-      imageUrl: json['urlToImage'] ?? '',
-      sourceName: json['source']['name'] ?? 'Unknown',
-    );
-  }
-}
+import 'articles_screen.dart';
+import 'details.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -84,7 +56,7 @@ class HomePageState extends State<HomePage> {
     return Scaffold(body:
         BlocBuilder<HomePageArticlesCubit, HomePageArticlesState>(
             builder: (context, state) {
-      Widget widget = SizedBox();
+      Widget widget = const SizedBox();
       if (state is LoadingArticlesState) {
         widget = const Center(
           child: CircularProgressIndicator(),
@@ -95,65 +67,80 @@ class HomePageState extends State<HomePage> {
         );
       } else if (state is LoadedArticlesState) {
         widget = Column(children: [
-          Expanded(
-            flex: 2,
-            child: CarouselSlider.builder(
-              itemCount: state.articles!.length,
-              itemBuilder: (BuildContext context, int index, int realIndex) {
-                final article = state.articles![index];
-                return Stack(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 5, vertical: 5),
-                      height: 200,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        image: DecorationImage(
-                          image: NetworkImage(article.imageUrl),
-                          fit: BoxFit.cover,
+          Padding(
+            padding: EdgeInsets.only(top: 60.0),
+            child: Expanded(
+              flex: 2,
+              child: CarouselSlider.builder(
+                itemCount: state.articles!.length,
+                itemBuilder: (BuildContext context, int index, int realIndex) {
+                  final articles = state.articles![index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailView(article: articles),
                         ),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: [
-                              Colors.black.withOpacity(1.0),
-                              Colors.transparent,
-                            ],
+                      );
+                    },
+                    child: Stack(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 5,
+                          ),
+                          height: 200,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            image: DecorationImage(
+                              image: NetworkImage(articles.imageUrl),
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
-                        child: Text(
-                          article.title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              gradient: LinearGradient(
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
+                                colors: [
+                                  Colors.black.withOpacity(1.0),
+                                  Colors.transparent,
+                                ],
+                              ),
+                            ),
+                            child: Text(
+                              articles.title,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                );
-              },
-              options: CarouselOptions(
-                autoPlay: true,
-                enlargeCenterPage: true,
-                aspectRatio: 16 / 9,
-                onPageChanged: (index, reason) {
-                  setState(() {
-                    _currentSlideIndex = index;
-                  });
+                  );
                 },
+                options: CarouselOptions(
+                  autoPlay: true,
+                  enlargeCenterPage: true,
+                  aspectRatio: 16 / 9,
+                  onPageChanged: (index, reason) {
+                    setState(() {
+                      _currentSlideIndex = index;
+                    });
+                  },
+                ),
               ),
             ),
           ),
@@ -175,9 +162,9 @@ class HomePageState extends State<HomePage> {
             // ),
           ),
           const Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: EdgeInsets.only(top: 40.0, bottom: 15.0),
             child: Text(
-              'Channels',
+              'News Channels',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 20.0,
@@ -192,47 +179,65 @@ class HomePageState extends State<HomePage> {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: List.generate(state.articles!.length, (index) {
-                  return Column(
-                    children: [
-                      SizedBox(
-                        height: 80.0,
-                        // set the height to a value greater than or equal to 80.0
-                        child: ClipOval(
-                          child: Image.network(
-                            getChannelLogoUrl(
-                                state.articles![index].sourceName),
-                            errorBuilder: (BuildContext context,
-                                Object exception, StackTrace? stackTrace) {
-                              return Image.network(
-                                'https://t3.ftcdn.net/jpg/01/79/14/62/360_F_179146215_NEoBhSC2oKw9hwX7K3hAkAPLZueAeGEs.jpg',
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ArticlesScreen(
+                            channelId: state.articles![index].sourceName
+                                .replaceAll(' ', '-')
+                                .toLowerCase(),
+                            channelName: state.articles![index].sourceName,
+                            description: state.articles![index].description,
+                          ),
+                        ),
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 80.0,
+                            // set the height to a value greater than or equal to 80.0
+                            child: ClipOval(
+                              child: Image.network(
+                                getChannelLogoUrl(
+                                    state.articles![index].sourceName),
+                                errorBuilder: (BuildContext context,
+                                    Object exception, StackTrace? stackTrace) {
+                                  return Image.network(
+                                    'https://t3.ftcdn.net/jpg/01/79/14/62/360_F_179146215_NEoBhSC2oKw9hwX7K3hAkAPLZueAeGEs.jpg',
+                                    height: 80.0,
+                                    width: 80.0,
+                                  );
+                                },
                                 height: 80.0,
                                 width: 80.0,
-                              );
-                            },
-                            height: 80.0,
-                            width: 80.0,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 1,
-                        child: Container(
-                          child: Center(
-                            child: Text(
-                              state.articles![index].sourceName,
-                              style: const TextStyle(fontSize: 12.0),
+                              ),
                             ),
                           ),
-                        ),
+                          Expanded(
+                            flex: 1,
+                            child: Center(
+                              child: Text(
+                                state.articles![index].sourceName,
+                                style: const TextStyle(fontSize: 12.0),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   );
                 }),
               ),
             ),
           ),
+
           const Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: EdgeInsets.only(top: 40.0, bottom: 0.0),
             child: Text(
               'Breaking News',
               style: TextStyle(
@@ -242,12 +247,6 @@ class HomePageState extends State<HomePage> {
               textAlign: TextAlign.start,
             ),
           ),
-
-          // if (state is LoadingArticlesState) {
-          //   return const Center(
-          //     child: CircularProgressIndicator(),
-          //   );
-          // } else if (state is LoadedArticlesState) {
           Expanded(
             flex: 3,
             child: ListView.builder(
@@ -265,20 +264,29 @@ class HomePageState extends State<HomePage> {
                   }
                 }
 
-                print('out of if statements');
-
                 final article = state.articles![index];
-                return Container(
-                  margin: const EdgeInsets.symmetric(vertical: 5),
-                  padding: const EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailView(
+                          article: article,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 5),
+                    padding: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
                           borderRadius: BorderRadius.circular(15),
                           child: Image.network(
                             article.imageUrl,
@@ -294,38 +302,40 @@ class HomePageState extends State<HomePage> {
                                 fit: BoxFit.cover,
                               );
                             },
-                          )),
-                      Flexible(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                article.title,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              Text(
-                                'By ${article.author}',
-                                style: const TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                            ],
                           ),
                         ),
-                      ),
-                    ],
+                        Flexible(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  article.title,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                Text(
+                                  'By ${article.author}',
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
             ),
-          )
+          ),
         ]);
       }
       return widget;

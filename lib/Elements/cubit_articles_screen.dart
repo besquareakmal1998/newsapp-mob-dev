@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:newsapp/key.dart';
-import 'articles_screen.dart';
+import '../Declaration/article.dart';
 
 class CubitArticlesScreen extends Cubit<ArticleScreenState> {
   final String channelId;
@@ -14,7 +14,7 @@ class CubitArticlesScreen extends Cubit<ArticleScreenState> {
   Future<void> getArticlesForChannel() async {
     try {
       String articlesWeblink =
-          "$url/everything?sources=$channelId&apiKey=$apiKey";
+          "$url/top-headlines?sources=$channelId&apiKey=$apiKey";
       final response = await http.get(Uri.parse(articlesWeblink));
       if (response.statusCode == 200) {
         final articlesJson = json.decode(response.body)['articles'];

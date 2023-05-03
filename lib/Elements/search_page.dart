@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
-import 'home_page.dart';
+import '../Declaration/article.dart';
+import 'details.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -16,10 +16,9 @@ class _SearchPageState extends State<SearchPage> {
   late final String apiUrl =
       'https://newsapi.org/v2/top-headlines?language=en&apiKey=$apikey';
 
-  late final String apikey = 'e9041acfdfd94aef9a4713586aec923f';
+  late final String apikey = '1cab568c1f2e4000861b3346517590bd';
 
   List<Article> _articles = [];
-  bool _loading = true;
   late TextEditingController _searchController;
 
   @override
@@ -41,12 +40,9 @@ class _SearchPageState extends State<SearchPage> {
       setState(() {
         _articles =
             jsonData.map((article) => Article.fromJson(article)).toList();
-        _loading = false;
       });
     } catch (e) {
-      print(e.toString());
       setState(() {
-        _loading = false;
       });
     }
   }
@@ -93,47 +89,91 @@ class _SearchPageState extends State<SearchPage> {
                 )
               : Container(),
           Expanded(
-            // child: _loading ? const Center(
-            //   child: CircularProgressIndicator(),
-            // )
-            //     :
             child: ListView.builder(
               itemCount: _articles.length,
               itemBuilder: (BuildContext context, int index) {
                 final article = _articles[index];
-                return Card(
-                  margin: const EdgeInsets.all(13),
-                  child: Column(
-                    children: [
-                      Image.network(article.imageUrl),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            article.title,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            'By ${article.author}',
-                            style: const TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailView(article: article),
                       ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
+                    );
+                  },
+                  child: Card(
+                    margin: const EdgeInsets.all(13),
+                    child: Column(
+                      children: [
+                        Image.network(article.imageUrl),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              article.title,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(height: 5),
+                            Text(
+                              'By ${article.author}',
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 14,
+                              ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          article.description,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              article.publishedAt,
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: Colors.grey[200],
+                              ),
+                              child: Text(
+                                article.sourceName,
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
       ),
-    );
-  }
+    ],
+  ),
+);
+}
 }

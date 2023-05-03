@@ -43,12 +43,12 @@ class NewsChannelsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('News Channels List'),
+        title: const Text('List of News Channels'),
       ),
       body: BlocBuilder<CubitChannelList, ChannelState>(
         builder: (context, channels) {
           if (channels is ChannelStateLoading) {
-            return const Text("f");
+            return const Text("");
           } else if (channels is ChannelStateLoaded) {
             return Padding(
               padding: const EdgeInsets.only(top: 16.0),
@@ -84,7 +84,7 @@ class NewsChannelsScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                channels[index],
+                                channels[index].replaceAll('-', ' ').capitalize(),
                                 textAlign: TextAlign.center,
                               ),
                             ],

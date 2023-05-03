@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:newsapp/data/articles_get_req.dart';
-
-import 'home_page.dart';
+import '../Declaration/article.dart';
 
 class HomePageArticlesCubit extends Cubit<HomePageArticlesState> {
   final ArticlesGetReq getReq = ArticlesGetReq();
@@ -14,12 +13,11 @@ class HomePageArticlesCubit extends Cubit<HomePageArticlesState> {
     List<Article> articles = [];
 
     emit(LoadingArticlesState());
-    articles = await getReq.getArticles(page) ?? [];
+    articles = (await getReq.getArticles(page) ?? []).cast<Article>();
     if (articles.isEmpty) {
       emit(FailedToLoadArticlesState());
     } else {
       page++;
-      print('Loaded state');
       emit(LoadedArticlesState(articles: articles, hasReachedMax: false));
     }
   }
@@ -30,7 +28,7 @@ class HomePageArticlesCubit extends Cubit<HomePageArticlesState> {
 
     List<Article> newArticles = [];
 
-    newArticles = await getReq.getArticles(page) ?? [];
+    newArticles = (await getReq.getArticles(page) ?? []).cast<Article>();
     if (newArticles.isEmpty) {
       emit(LoadedArticlesState(articles: currentArticles, hasReachedMax: true));
     } else {

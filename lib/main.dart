@@ -6,6 +6,7 @@ import 'package:newsapp/Elements/homepagearticles_cubit.dart';
 
 void main() {
   runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
     title: 'Flutter News',
     home: MultiBlocProvider(
       providers: [

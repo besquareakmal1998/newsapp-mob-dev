@@ -1,38 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as http;
 import 'package:newsapp/Elements/details.dart';
-import 'package:newsapp/key.dart';
 import 'cubit_articles_screen.dart';
-
-class Article {
-  final String title;
-  final String description;
-  final String link;
-  final String urlToImage;
-  final String publishedAt;
-  final String author;
-
-  Article(
-      {required this.title,
-      required this.description,
-      required this.link,
-      required this.urlToImage,
-      required this.publishedAt,
-      required this.author});
-
-  factory Article.fromJson(Map<String, dynamic> json) {
-    return Article(
-      title: json['title'] ?? "",
-      description: json['description'] ?? "",
-      link: json['url'] ?? "",
-      urlToImage: json['urlToImage'] ?? "",
-      publishedAt: json['publishedAt'] ?? "",
-      author: json['author'] ?? "Unknown Author",
-    );
-  }
-}
 
 class ArticlesScreen extends StatelessWidget {
   final String channelId;
@@ -45,27 +14,13 @@ class ArticlesScreen extends StatelessWidget {
     required this.description,
   }) : super(key: key);
 
-  Future<List<Article>> getArticlesForChannel() async {
-    String articlesWeblink =
-        "$url/everything?sources=$channelId&apiKey=$apiKey";
-    final response = await http.get(Uri.parse(articlesWeblink));
-    if (response.statusCode == 200) {
-      final articlesJson = json.decode(response.body)['articles'];
-      return articlesJson
-          .map<Article>((articleJson) => Article.fromJson(articleJson))
-          .toList();
-    } else {
-      throw Exception('Failed to load news articles');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider<CubitArticlesScreen>(
         create: (context) => CubitArticlesScreen(channelId),
         child: Scaffold(
           appBar: AppBar(
-            title: Text('Flutter News - $channelName'),
+            title: Text(channelName),
           ),
           body: BlocBuilder<CubitArticlesScreen, ArticleScreenState>(
             builder: (BuildContext context, ArticleScreenState state) {
@@ -172,5 +127,5 @@ class ArticlesScreen extends StatelessWidget {
 }
 
 String getChannelImageUrl(String channelId) {
-  return 'https://logo.clearbit.com/${channelId.replaceAll(' ', '').toLowerCase()}.com';
+  return 'https://logo.clearbit.com/${channelId.replaceAll('-', '').toLowerCase()}.com';
 }

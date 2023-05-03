@@ -1,10 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:newsapp/key.dart';
-import 'articles_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:iconly/iconly.dart';
+import '../Declaration/article.dart';
 
 class DetailView extends StatelessWidget {
   const DetailView({Key? key, required this.article}) : super(key: key);
@@ -12,7 +9,7 @@ class DetailView extends StatelessWidget {
 
   launchURL(String url) async {
     if (await canLaunchUrl(url as Uri)) {
-      await launchURL(url);
+      await launchURL(Uri.parse(url).toString());
     } else {
       throw "Unable to display $url";
     }
@@ -52,7 +49,7 @@ class DetailView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(top: 10, bottom: 25),
+                  padding: const EdgeInsets.only(top: 10, bottom: 0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -66,7 +63,8 @@ class DetailView extends StatelessWidget {
                 ),
                 Text(
                   article.title,
-                  style: Theme.of(context).textTheme.headlineMedium,
+                  // style: Theme.of(context).textTheme.headlineMedium,
+                  style: const TextStyle(fontSize: 30)
                 ),
                 const SizedBox(
                   height: 10,
@@ -94,7 +92,7 @@ class DetailView extends StatelessWidget {
                 ),
                 ElevatedButton(
                     onPressed: () {
-                      url = article.link;
+                      launchURL(article.link);
                     },
                     child: const Text("Read More")),
               ],
