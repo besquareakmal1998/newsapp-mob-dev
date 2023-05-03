@@ -46,7 +46,6 @@ class ArticlesScreen extends StatelessWidget {
   Future<List<Article>> getArticlesForChannel() async {
     String articlesWeblink = "$url/everything?sources=$channelId&apiKey=$apiKey";
     final response = await http.get(Uri.parse(articlesWeblink));
-    print(response);
     if (response.statusCode == 200) {
       final articlesJson = json.decode(response.body)['articles'];
       return articlesJson
