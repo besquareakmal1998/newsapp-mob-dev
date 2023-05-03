@@ -37,7 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   rxdart: ^0.24.1
   eva_icons_flutter: ^2.0.1
-  carousel_slider: ^2.2.1
+  carousel_slider: ^4.2.1
   timeago: ^2.0.26
   flutter_html: ^0.11.1
   url_launcher: ^5.5.0
@@ -45,6 +45,9 @@ dependencies:
   flutter_bloc: ^8.1.1
   equatable: ^2.0.5
   iconly: ^1.0.1
+  infinite_scroll_pagination: ^3.2.0
+  dots_indicator: ^2.1.0
+  
 
 dev_dependencies:
   flutter_test:
