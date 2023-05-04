@@ -61,11 +61,9 @@ class DetailView extends StatelessWidget {
                     ],
                   ),
                 ),
-                Text(
-                  article.title,
-                  // style: Theme.of(context).textTheme.headlineMedium,
-                  style: const TextStyle(fontSize: 30)
-                ),
+                Text(article.title,
+                    // style: Theme.of(context).textTheme.headlineMedium,
+                    style: const TextStyle(fontSize: 30)),
                 const SizedBox(
                   height: 10,
                 ),
