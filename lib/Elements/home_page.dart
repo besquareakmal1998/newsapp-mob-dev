@@ -22,23 +22,23 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  // Future<void> toggleFavorite(Article article) async {
-  //   setState(() {
-  //     article.isFavourite = !article.isFavourite;
-  //     if (article.isFavourite) {
-  //       favourites.add(article);
-  //       favouriteNews.add(article.toJson());
-  //       print(article.toJson());
-  //       // add to Firestore
-  //     } else {
-  //       favourites.remove(article);
-  //       // TODO: remove from Firestore
-  //     }
-  //   });
-  // }
+  Future<void> toggleFavorite(Article article) async {
+    setState(() {
+      article.isFavourite = !article.isFavourite;
+      if (article.isFavourite) {
+        favourites.add(article);
+        favouriteNews.add(article.toJson());
+        print(article.toJson());
+        // add to Firestore
+      } else {
+        favourites.remove(article);
+        // TODO: remove from Firestore
+      }
+    });
+  }
 
   String getChannelLogoUrl(String sourceName) {
-    return 'https://logo.clearbit.com/${sourceName.replaceAll(' ', '').toLowerCase()}.com';
+    return 'https://logo.clearbit.com/${sourceName!.replaceAll(' ', '').toLowerCase()}.com';
   }
 
   CollectionReference favouriteNews =
@@ -64,30 +64,30 @@ class HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  Future<List<Article>?> getArticles(int page) async {
-    List<Article> articles = [];
-    const String apikey = 'ea34d752391d4c4cae5be0cf3f957044';
-    https: //newsapi.org/v2/top-headlines?language=en&apiKey=1cab568c1f2e4000861b3346517590bd
-    String apiUrl =
-        'https://newsapi.org/v2/top-headlines?language=en&apiKey=$apikey';
-    try {
-      final response =
-          await http.get(Uri.parse('$apiUrl&page=$page&pageSize=10'));
-      final jsonData = json.decode(response.body)['articles'] as List;
-      final newArticles =
-          jsonData.map((article) => Article.fromJson(article)).toList();
-
-      if (page == 1) {
-        articles = newArticles;
-      } else {
-        articles.addAll(newArticles);
-      }
-      print('articles : ${articles.toString()}');
-    } catch (e) {
-      print(e.toString());
-    }
-    return articles;
-  }
+  // Future<List<Article>?> getArticles(int page) async {
+  //   List<Article> articles = [];
+  //   const String apikey = 'ea34d752391d4c4cae5be0cf3f957044';
+  //   https: //newsapi.org/v2/top-headlines?language=en&apiKey=1cab568c1f2e4000861b3346517590bd
+  //   String apiUrl =
+  //       'https://newsapi.org/v2/top-headlines?language=en&apiKey=$apikey';
+  //   try {
+  //     final response =
+  //         await http.get(Uri.parse('$apiUrl&page=$page&pageSize=10'));
+  //     final jsonData = json.decode(response.body)['articles'] as List;
+  //     final newArticles =
+  //         jsonData.map((article) => Article.fromJson(article)).toList();
+  //
+  //     if (page == 1) {
+  //       articles = newArticles;
+  //     } else {
+  //       articles.addAll(newArticles);
+  //     }
+  //     print('articles : ${articles.toString()}');
+  //   } catch (e) {
+  //     print(e.toString());
+  //   }
+  //   return articles;
+  // }
 
   void _onScroll() {
     if (_scrollController.position.atEdge &&
@@ -377,6 +377,26 @@ class HomePageState extends State<HomePage> {
                               ],
                             ),
                           ),
+                        ),
+                        // ElevatedButton(
+                        //   onPressed: () async {
+                        //     await favouriteNews.add(article.toJson());
+                        //     await toggleFavorite(article);
+                        //   },
+                        //   child: Text('Save'),
+                        // ),
+                        IconButton(
+                          icon: Icon(
+                            article.isFavourite
+                                ? Icons.bookmark_add
+                                : Icons.bookmark_add_outlined,
+                            color:
+                                article.isFavourite ? Colors.red : Colors.grey,
+                          ),
+                          onPressed: () async {
+                            await favouriteNews.add(article.toJson());
+                            await toggleFavorite(article);
+                          },
                         ),
                       ],
                     ),
