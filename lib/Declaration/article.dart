@@ -7,9 +7,10 @@ class Article {
   final String author;
   String imageUrl;
   String sourceName;
+  bool isFavourite;
 
-
-  Article({required this.title,
+  Article({
+    required this.title,
     required this.description,
     required this.link,
     required this.urlToImage,
@@ -17,7 +18,7 @@ class Article {
     required this.author,
     required this.imageUrl,
     required this.sourceName,
-
+    required this.isFavourite,
   });
 
   factory Article.fromJson(Map<String, dynamic> json) {
@@ -30,7 +31,18 @@ class Article {
       author: json['author'] ?? "Unknown Author",
       imageUrl: json['urlToImage'] ?? '',
       sourceName: json['source']['name'] ?? 'Unknown',
+      isFavourite: false,
       // channelId: json['source']['id'] ?? "",
     );
+  }
+
+  toJson() {
+    return {
+      "title": title,
+      "author": author,
+      "description": description,
+      "imageUrl": imageUrl,
+      "sourceName": sourceName,
+    };
   }
 }

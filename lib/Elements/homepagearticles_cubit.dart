@@ -39,7 +39,7 @@ class HomePageArticlesCubit extends Cubit<HomePageArticlesState> {
     } else {
       page++;
       final List<Article> updatedArticles = List.from(currentArticles)
-        ..addAll(oldArticles)
+        ..addAll(oldArticles.isNotEmpty ? oldArticles : [])
         ..addAll(newArticles);
       emit(
           LoadedArticlesState(articles: updatedArticles, hasReachedMax: false));
