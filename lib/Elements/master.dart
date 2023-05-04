@@ -33,6 +33,8 @@ class MyHomePageState extends State<MyHomePage> {
         body: _pages[_currentIndex],
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentIndex,
+          selectedItemColor: Theme.of(context).primaryColor,
+          unselectedItemColor: Colors.blueGrey,
           onTap: (index) {
             setState(() {
               _currentIndex = index;

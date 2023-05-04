@@ -8,17 +8,22 @@ class DetailView extends StatelessWidget {
   final Article article;
 
   launchURL(String url) async {
-    if (await canLaunchUrl(url as Uri)) {
-      await launchURL(Uri.parse(url).toString());
-    } else {
-      throw "Unable to display $url";
-    }
+  final uri = Uri.parse(url);
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(uri);
+  } else {
+    throw "Unable to display $uri";
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
+      appBar: AppBar(
+        title: Text(article.title),
+      ),
       body: Stack(
         children: [
           SizedBox(
