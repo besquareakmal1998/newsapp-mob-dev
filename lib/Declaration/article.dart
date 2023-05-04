@@ -8,15 +8,17 @@ class Article {
   String imageUrl;
   String sourceName;
 
-  Article(
-      {required this.title,
-      required this.description,
-      required this.link,
-      required this.urlToImage,
-      required this.publishedAt,
-      required this.author,
-      required this.imageUrl,
-    required this.sourceName,});
+
+  Article({required this.title,
+    required this.description,
+    required this.link,
+    required this.urlToImage,
+    required this.publishedAt,
+    required this.author,
+    required this.imageUrl,
+    required this.sourceName,
+
+  });
 
   factory Article.fromJson(Map<String, dynamic> json) {
     return Article(

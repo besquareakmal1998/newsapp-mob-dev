@@ -26,6 +26,11 @@ class HomePageArticlesCubit extends Cubit<HomePageArticlesState> {
     if (loading) return;
     loading = true;
 
+    List<Article> oldArticles = [];
+
+    if (state is LoadedArticlesState) {
+      oldArticles.addAll((state as LoadedArticlesState).articles ?? []);
+    }
     List<Article> newArticles = [];
 
     newArticles = (await getReq.getArticles(page) ?? []).cast<Article>();
@@ -34,6 +39,7 @@ class HomePageArticlesCubit extends Cubit<HomePageArticlesState> {
     } else {
       page++;
       final List<Article> updatedArticles = List.from(currentArticles)
+        ..addAll(oldArticles)
         ..addAll(newArticles);
       emit(
           LoadedArticlesState(articles: updatedArticles, hasReachedMax: false));

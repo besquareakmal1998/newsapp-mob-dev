@@ -1,11 +1,18 @@
+import 'dart:convert';
+
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 // import 'package:http/http.dart' as http;
 // import 'package:dots_indicator/dots_indicator.dart';
 import 'package:newsapp/Elements/homepagearticles_cubit.dart';
+import '../Declaration/article.dart';
 import 'articles_screen.dart';
 import 'details.dart';
+
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -15,10 +22,28 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+  // Future<void> toggleFavorite(Article article) async {
+  //   setState(() {
+  //     article.isFavourite = !article.isFavourite;
+  //     if (article.isFavourite) {
+  //       favourites.add(article);
+  //       favouriteNews.add(article.toJson());
+  //       print(article.toJson());
+  //       // add to Firestore
+  //     } else {
+  //       favourites.remove(article);
+  //       // TODO: remove from Firestore
+  //     }
+  //   });
+  // }
+
   String getChannelLogoUrl(String sourceName) {
     return 'https://logo.clearbit.com/${sourceName.replaceAll(' ', '').toLowerCase()}.com';
   }
 
+  CollectionReference favouriteNews =
+      FirebaseFirestore.instance.collection("favouritenews");
+  List<Article> favourites = [];
   late final HomePageArticlesCubit homePageArticlesCubit;
 
   final ScrollController _scrollController = ScrollController();
@@ -28,25 +53,50 @@ class HomePageState extends State<HomePage> {
     // homePageArticlesCubit = context.read<HomePageArticlesCubit>();
     homePageArticlesCubit = BlocProvider.of<HomePageArticlesCubit>(context);
     homePageArticlesCubit.getArticles();
-    //_scrollController.addListener(_onScroll);
-    // _scrollController.addListener(() {
-    //   if (_scrollController.position.pixels ==
-    //       _scrollController.position.maxScrollExtent) {
-    //     homePageArticlesCubit.getArticles();
-    //   }
-    // });
+    _scrollController.addListener(_onScroll);
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        homePageArticlesCubit.loadMoreArticles([]);
+      }
+    });
     // _scrollController.addListener(_onScroll);
     super.initState();
   }
 
-  // void _onScroll() {
-  //   if (_scrollController.position.atEdge &&
-  //       _scrollController.position.pixels != 0) {
-  //     // if the user has scrolled to the end of the list
-  //     homePageArticlesCubit
-  //         .loadMoreArticles(articles); // load the next page of articles
-  //   }
-  // }
+  Future<List<Article>?> getArticles(int page) async {
+    List<Article> articles = [];
+    const String apikey = 'ea34d752391d4c4cae5be0cf3f957044';
+    https: //newsapi.org/v2/top-headlines?language=en&apiKey=1cab568c1f2e4000861b3346517590bd
+    String apiUrl =
+        'https://newsapi.org/v2/top-headlines?language=en&apiKey=$apikey';
+    try {
+      final response =
+          await http.get(Uri.parse('$apiUrl&page=$page&pageSize=10'));
+      final jsonData = json.decode(response.body)['articles'] as List;
+      final newArticles =
+          jsonData.map((article) => Article.fromJson(article)).toList();
+
+      if (page == 1) {
+        articles = newArticles;
+      } else {
+        articles.addAll(newArticles);
+      }
+      print('articles : ${articles.toString()}');
+    } catch (e) {
+      print(e.toString());
+    }
+    return articles;
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.atEdge &&
+        _scrollController.position.pixels != 0) {
+      // if the user has scrolled to the end of the list
+      homePageArticlesCubit
+          .loadMoreArticles([]); // load the next page of articles
+    }
+  }
 
   int _currentSlideIndex = 0;
   Set<String> displayedNames = {};
@@ -235,7 +285,6 @@ class HomePageState extends State<HomePage> {
               ),
             ),
           ),
-
           const Padding(
             padding: EdgeInsets.only(top: 40.0, bottom: 0.0),
             child: Text(
