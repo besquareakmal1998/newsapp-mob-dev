@@ -1,3 +1,3 @@
 String url = "https://newsapi.org/v2";
-String apiKey = "7a2036d273524925b937fddb814623c5";
+String apiKey = "ea34d752391d4c4cae5be0cf3f957044";
 String country = "us";

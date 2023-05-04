@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:newsapp/Elements/favourite.dart';
 
 import 'home_page.dart';
 import 'search_page.dart';
@@ -13,9 +14,10 @@ class MyHomePage extends StatefulWidget {
 
 class MyHomePageState extends State<MyHomePage> {
   int _currentIndex = 0;
-  final List<Widget> _pages = [
+  late final List<Widget> _pages = [
     const HomePage(),
     const NewsChannelsScreen(),
+    FavouriteArticlesPage(),
     const SearchPage(),
   ];
 
@@ -44,6 +46,10 @@ class MyHomePageState extends State<MyHomePage> {
             BottomNavigationBarItem(
               icon: Icon(Icons.list),
               label: 'Channels',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bookmark),
+              label: 'Favourite',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.search),
