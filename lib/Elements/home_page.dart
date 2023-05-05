@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 // import 'package:http/http.dart' as http;
 // import 'package:dots_indicator/dots_indicator.dart';
-import 'package:newsapp/Elements/homepagearticles_cubit.dart';
+import 'package:newsapp/Cubit/homepagearticles_cubit.dart';
 import '../Declaration/article.dart';
 import 'articles_screen.dart';
 import 'details.dart';
@@ -29,10 +29,8 @@ class HomePageState extends State<HomePage> {
         favourites.add(article);
         favouriteNews.add(article.toJson());
         print(article.toJson());
-        // add to Firestore
       } else {
         favourites.remove(article);
-        // TODO: remove from Firestore
       }
     });
   }
@@ -118,7 +116,7 @@ class HomePageState extends State<HomePage> {
       } else if (state is LoadedArticlesState) {
         widget = Column(children: [
           Padding(
-            padding: EdgeInsets.only(top: 60.0),
+            padding: const EdgeInsets.only(top: 60.0),
             child: Expanded(
               flex: 2,
               child: CarouselSlider.builder(

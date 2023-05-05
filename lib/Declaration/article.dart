@@ -30,7 +30,9 @@ class Article {
       publishedAt: json['publishedAt'] ?? "",
       author: json['author'] ?? "Unknown Author",
       imageUrl: json['urlToImage'] ?? '',
-      sourceName: json['source']['name'] ?? 'Unknown',
+      sourceName: json['source'] != null && json['source']['name'] is String
+          ? json['source']['name']
+          : "Unknown",
       isFavourite: false,
       // channelId: json['source']['id'] ?? "",
     );
@@ -42,7 +44,7 @@ class Article {
       "author": author,
       "description": description,
       "imageUrl": imageUrl,
-      "sourceName": sourceName,
+      "source": {"name": sourceName},
     };
   }
 }

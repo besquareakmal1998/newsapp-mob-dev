@@ -17,7 +17,7 @@ class MyHomePageState extends State<MyHomePage> {
   late final List<Widget> _pages = [
     const HomePage(),
     const NewsChannelsScreen(),
-    FavouriteArticlesPage(),
+    const FavouriteArticlesPage(),
     const SearchPage(),
   ];
 

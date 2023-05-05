@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newsapp/Elements/details.dart';
-import 'cubit_articles_screen.dart';
+import '../Cubit/cubit_articles_screen.dart';
 
 class ArticlesScreen extends StatelessWidget {
   final String channelId;

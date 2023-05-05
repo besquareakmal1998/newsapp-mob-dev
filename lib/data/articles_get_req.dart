@@ -1,14 +1,14 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:newsapp/Declaration/article.dart';
+import 'package:newsapp/key.dart';
 
 class ArticlesGetReq {
   Future<List<Article>?> getArticles(int page) async {
     List<Article> articles = [];
-    const String apikey = '3b8eb4e038da43f5bc9f17b85bd06c3b';
     // https: //newsapi.org/v2/top-headlines?language=en&apiKey=$e9041acfdfd94aef9a4713586aec923f
     String apiUrl =
-        'https://newsapi.org/v2/top-headlines?country=us&apiKey=$apikey';
+        'https://newsapi.org/v2/top-headlines?country=us&apiKey=$apiKey';
     try {
       final response =
           await http.get(Uri.parse('$apiUrl&page=$page&pageSize=10'));
