@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:newsapp/Elements/favourite.dart';
+import 'package:newsapp/Elements/profile.dart';
 
 import 'home_page.dart';
 import 'search_page.dart';
@@ -19,6 +20,7 @@ class MyHomePageState extends State<MyHomePage> {
     const NewsChannelsScreen(),
     const FavouriteArticlesPage(),
     const SearchPage(),
+    const ProfilePage(),
   ];
 
   @override
@@ -56,6 +58,10 @@ class MyHomePageState extends State<MyHomePage> {
             BottomNavigationBarItem(
               icon: Icon(Icons.search),
               label: 'Search',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
             ),
           ],
         ),
