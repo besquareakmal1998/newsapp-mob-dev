@@ -2,11 +2,29 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:newsapp/Declaration/article.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-
+import 'package:fluttertoast/fluttertoast.dart';
 import 'details.dart';
 
-class FavouriteArticlesPage extends StatelessWidget {
+class FavouriteArticlesPage extends StatefulWidget {
   const FavouriteArticlesPage({Key? key}) : super(key: key);
+
+  @override
+  _FavouriteArticlesPageState createState() => _FavouriteArticlesPageState();
+}
+
+class _FavouriteArticlesPageState extends State<FavouriteArticlesPage> {
+  List<Article> articles = [];
+
+  void qqdeleteItem(id, index) {
+    FirebaseFirestore.instance.collection("favouritenews").doc(id).delete().then((value) {
+      Fluttertoast.showToast(msg:'Favourites deleted');
+      setState(() {
+        articles.removeAt(index);
+      });
+    }).catchError((error) {
+      Fluttertoast.showToast(msg:'An error occurred while deleting favourites.');
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,8 +32,8 @@ class FavouriteArticlesPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Favourite Articles'),
       ),
-      body: FutureBuilder<QuerySnapshot>(
-        future: FirebaseFirestore.instance.collection('favouritenews').get(),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('favouritenews').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -28,7 +46,7 @@ class FavouriteArticlesPage extends StatelessWidget {
             );
           }
 
-          final List<Article> articles = snapshot.data!.docs.map((doc) {
+          articles = snapshot.data!.docs.map((doc) {
             final data = doc.data() as Map<String, dynamic>;
             return Article.fromJson(data as Map<String, dynamic>);
           }).toList();
@@ -52,10 +70,7 @@ class FavouriteArticlesPage extends StatelessWidget {
                     children: [
                       SlidableAction(
                         onPressed: (c) {
-                          FirebaseFirestore.instance
-                              .collection('favouritenews')
-                              .doc(article.title)
-                              .delete();
+                          deleteItem(snapshot.data?.docs[index].id, index);
                         },
                         backgroundColor: Color(0xFFFE4A49),
                         foregroundColor: Colors.white,
